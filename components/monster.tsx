@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 type MonsterProps =
   | {
       id: number;
-      hp: number;
+      hp?: undefined;
       mode: 'select';
       onSelected: (id: number) => void;
       onAttack?: undefined;
@@ -22,7 +22,7 @@ type MonsterProps =
     }
   | {
       id: number;
-      hp: number;
+      hp?: undefined;
       mode: 'none';
       onAttack?: undefined;
       onSelected?: undefined;
@@ -92,9 +92,7 @@ export default function Monster({
       )}
 
       {mode === 'select' && (
-        <Button onClick={() => onSelected(monster.id)} disabled={hp <= 0}>
-          選ぶ
-        </Button>
+        <Button onClick={() => onSelected(monster.id)}>選ぶ</Button>
       )}
     </div>
   );
