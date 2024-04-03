@@ -2,21 +2,14 @@
 
 import Monster from '@/components/monster';
 import { Button } from '@/components/ui/button';
-import { MonsterCount } from '@/lib/monster';
 import { useMonster } from '@/providers/monster';
+import { useStage } from '@/providers/stage';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { Dispatch, SetStateAction, useMemo, useRef } from 'react';
 
 export default function Page() {
   const { myMonsterId } = useMonster();
-
-  const setMyHp = useRef<Dispatch<SetStateAction<number>>>();
-  const setEnemyHp = useRef<Dispatch<SetStateAction<number>>>();
-
-  const randomEnemyId = useMemo(() => {
-    return Math.floor(Math.random() * MonsterCount) + 1;
-  }, []);
+  const { enemyId, attack, reset, enemyHp, playerHp } = useStage();
 
   if (!myMonsterId) {
     redirect('/');
@@ -29,8 +22,7 @@ export default function Page() {
       </Button>
       <Button
         onClick={() => {
-          setMyHp.current?.(100);
-          setEnemyHp.current?.(100);
+          reset();
         }}
         variant="outline"
         className="mb-4"
@@ -41,26 +33,18 @@ export default function Page() {
       <div className="grid gap-5 grid-cols-2">
         <div>
           <Monster
-            onInit={(setter) => {
-              setMyHp.current = setter;
-            }}
+            hp={playerHp}
             id={myMonsterId}
             mode="battle"
-            onAttack={() => {
-              setEnemyHp.current?.((prev) => Math.max(prev - 10, 0));
-            }}
+            onAttack={() => attack('enemy')}
           />
         </div>
         <div>
           <Monster
-            onInit={(setEnemeyHp) => {
-              setEnemyHp.current = setEnemeyHp;
-            }}
-            id={randomEnemyId}
+            hp={enemyHp}
+            id={enemyId}
             mode="battle"
-            onAttack={() => {
-              setMyHp.current?.((prev) => Math.max(prev - 10, 0));
-            }}
+            onAttack={() => attack('player')}
           />
         </div>
       </div>
